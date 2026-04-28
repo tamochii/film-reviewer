@@ -9,6 +9,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def _env_or_default(name: str, default: str) -> str:
+    return os.getenv(name, "").strip() or default
+
+
 @dataclass(frozen=True)
 class DeepSeekSettings:
     api_key: str
@@ -33,10 +37,10 @@ class Settings:
 
 def load_settings() -> Settings:
     deepseek_api_key = os.getenv("DEEPSEEK_API_KEY", "").strip()
-    deepseek_base_url = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1").strip()
-    deepseek_model = os.getenv("DEEPSEEK_MODEL", "deepseek-chat").strip()
+    deepseek_base_url = _env_or_default("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1")
+    deepseek_model = _env_or_default("DEEPSEEK_MODEL", "deepseek-chat")
     tmdb_api_key = os.getenv("TMDB_API_KEY", "").strip()
-    tmdb_base_url = os.getenv("TMDB_BASE_URL", "https://api.themoviedb.org/3").strip()
+    tmdb_base_url = _env_or_default("TMDB_BASE_URL", "https://api.themoviedb.org/3")
 
     missing = []
     if not deepseek_api_key:
@@ -63,8 +67,8 @@ def load_deepseek_settings() -> DeepSeekSettings:
 
     return DeepSeekSettings(
         api_key=api_key,
-        base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1").strip(),
-        model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat").strip(),
+        base_url=_env_or_default("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1"),
+        model=_env_or_default("DEEPSEEK_MODEL", "deepseek-chat"),
     )
 
 
@@ -75,5 +79,5 @@ def load_tmdb_settings() -> TMDBSettings:
 
     return TMDBSettings(
         api_key=api_key,
-        base_url=os.getenv("TMDB_BASE_URL", "https://api.themoviedb.org/3").strip(),
+        base_url=_env_or_default("TMDB_BASE_URL", "https://api.themoviedb.org/3"),
     )
