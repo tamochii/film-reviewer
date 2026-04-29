@@ -17,6 +17,11 @@ export type RunRecord = {
   created_at: string;
 };
 
+export type ChatMessage = {
+  role: 'user' | 'assistant';
+  content: string;
+};
+
 export type ConfigStatus = {
   deepseek_configured: boolean;
   tmdb_configured: boolean;

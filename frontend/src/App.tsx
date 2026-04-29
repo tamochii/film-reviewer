@@ -5,7 +5,7 @@ import { HistoryPanel } from './components/HistoryPanel';
 import { ResultPanel } from './components/ResultPanel';
 import { SettingsPanel } from './components/SettingsPanel';
 import { TaskRunner } from './components/TaskRunner';
-import type { ConfigStatus, RunRecord, TaskMeta } from './types';
+import type { ChatMessage, ConfigStatus, RunRecord, TaskMeta } from './types';
 
 export default function App() {
   const [tasks, setTasks] = useState<TaskMeta[]>([]);
@@ -13,6 +13,7 @@ export default function App() {
   const [config, setConfig] = useState<ConfigStatus | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState('classification');
   const [selectedRun, setSelectedRun] = useState<RunRecord | null>(null);
+  const [roleplayHistory, setRoleplayHistory] = useState<ChatMessage[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -56,7 +57,16 @@ export default function App() {
             </button>
           ))}
         </nav>
-        {selectedTask ? <TaskRunner task={selectedTask} onRun={handleRun} /> : <section className="task-runner empty-state">Loading tasks...</section>}
+        {selectedTask ? (
+          <TaskRunner
+            task={selectedTask}
+            currentRun={selectedRun?.task_id === selectedTask.id ? selectedRun : null}
+            roleplayHistory={roleplayHistory}
+            onRoleplayHistoryChange={setRoleplayHistory}
+            onRun={handleRun}
+            onSelectRun={setSelectedRun}
+          />
+        ) : <section className="task-runner empty-state">Loading tasks...</section>}
         <HistoryPanel runs={runs} selectedTaskId={selectedTaskId} onSelectRun={setSelectedRun} />
       </div>
 

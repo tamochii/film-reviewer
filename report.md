@@ -16,14 +16,21 @@
 
 环境：
 - Python 3
+- FastAPI 后端
+- React/Vite 前端
+- SQLite 本地运行历史
 - DeepSeek API
 - TMDB API
 
 项目结构：
-- `main.py`：交互式入口
+- `backend/app/`：FastAPI API、任务服务、DeepSeek/TMDB 客户端、SQLite 运行历史
+- `frontend/`：React/Vite 可视化实验工作台
+- `main.py`：保留的命令行交互入口
 - `prompts.py`：全部提示词
-- `task1_classification.py` ~ `task6_grid_search.py`：六个实验脚本
+- `task1_classification.py` ~ `task6_grid_search.py`：保留的六个实验脚本
 - `report.md`：实验报告
+
+工程化改造后，六个任务不仅可以通过命令行运行，也可以在浏览器中通过专属可视化界面运行：Task 1 显示准确率条和预测表，Task 2 显示 JSON 字段卡片，Task 3 显示双栏 CoT 对比，Task 4 提供多轮聊天页，Task 5 显示评分仪表，Task 6 显示变体排名卡片。
 
 本次运行中，电影基础信息通过 TMDB 实时获取。查询结果如下：
 - 电影名：`电锯人剧场版：蕾塞篇`
@@ -49,7 +56,9 @@ TMDB 返回的剧情简介核心信息为：电次在雨夜邂逅神秘少女蕾
 | 5   | 我本来想骂它卖惨过头，可最后电次那点没说出口的喜欢还是把我打中了，整体算喜欢。 | 积极     |
 
 ### 3.3 实际运行结果
-实际运行 `task1_classification.py` 后，控制台输出如下：
+实际运行 `task1_classification.py` 或在 Web UI 中点击 Task 1 后，可得到 Zero-shot 与 Few-shot 的对比结果。Web UI 会将准确率显示为可视化进度条，并把每条影评的 gold/predicted/correct 展示为预测表。
+
+控制台输出如下：
 
 ```text
 === Zero-shot ===
@@ -94,7 +103,9 @@ Few-shot 的提升是明确且可观测的，说明示例不仅能约束格式�
 并通过 `Return ONLY a valid JSON object` 强制其输出标准 JSON，再由 Python 用 `json.loads()` 进行解析。
 
 ### 4.2 实际运行结果
-实际运行 `task2_json_extract.py` 后，5 条影评全部成功解析，以下列出有代表性的结果：
+实际运行 `task2_json_extract.py` 或在 Web UI 中提交影评后，结果会被解析为结构化字段。Web UI 会把 `movie_name`、`sentiment_score`、`has_spoiler` 显示为字段卡片，把 `keywords` 显示为标签云；如果解析失败，会直接显示原始输出和解析错误。
+
+5 条影评全部成功解析，以下列出有代表性的结果：
 
 影评 1：
 ```json
@@ -146,7 +157,9 @@ Few-shot 的提升是明确且可观测的，说明示例不仅能约束格式�
 在剧情分析深度上的差异。
 
 ### 5.2 实际运行现象
-实际运行 `task3_cot_compare.py` 后：
+实际运行 `task3_cot_compare.py` 或在 Web UI 中提交剧情简介后，页面会把普通提示与 CoT 提示的结果放在左右两栏，便于直接比较结构性和分析深度。
+
+运行现象如下：
 
 无 CoT 版本的特点：
 - 直接围绕“温柔与杀意并存”的反转逻辑给出整体评价
@@ -183,7 +196,9 @@ Few-shot 的提升是明确且可观测的，说明示例不仅能约束格式�
 将模型设定为“刻薄但专业的电影评论家”，并测试在多轮对话中，模型是否会因用户诱导而脱离角色。
 
 ### 6.2 实际测试方式
-我进行了两轮对话：
+我进行了两轮对话。工程化后，Task 4 在 Web UI 中被设计为真正的多轮聊天页：中间区域显示用户与“刻薄但专业的电影评论家”的气泡消息，底部输入框继续发送新问题，前端会把历史消息传回后端以保持上下文。
+
+测试内容：
 1. 正常要求模型评价《电锯人剧场版：蕾塞篇》
 2. 故意要求它“不要当影评人，改当心理医生安慰电次”
 
@@ -212,7 +227,9 @@ Few-shot 的提升是明确且可观测的，说明示例不仅能约束格式�
 - format
 
 ### 7.2 实际运行结果
-实际运行 `task5_prompt_evaluator.py`，对 `SIMPLE_PROMPT` 的输出如下：
+实际运行 `task5_prompt_evaluator.py` 或在 Web UI 中提交提示词后，页面会把 clarity、completeness、format 三个维度显示为评分仪表，并保留原始 JSON 便于检查。
+
+对 `SIMPLE_PROMPT` 的输出如下：
 
 ```json
 {
@@ -240,7 +257,9 @@ Few-shot 的提升是明确且可观测的，说明示例不仅能约束格式�
 - 综合评分
 
 ### 8.2 实际运行结果
-实际运行 `task6_grid_search.py` 后输出如下：
+实际运行 `task6_grid_search.py` 或在 Web UI 中提交电影简介后，页面会把三个 prompt variant 显示为排名卡片，包含分数条、摘要长度、信息密度和最佳变体高亮。
+
+控制台输出如下：
 
 | 变体      | 摘要长度 | 信息密度 | 综合分 |
 | --------- | -------: | -------: | -----: |
@@ -290,6 +309,6 @@ Grid Search 的意义不只是多写几版提示词，而是为“哪个好”�
 - 提示词打分器可以帮助快速评估提示词质量
 - Grid Search 能把“主观感觉更好”转化为“有指标支撑的更优”
 
-同时，我还补充了仓库 About 文案、Docker 容器配置以及发布到 GHCR 的 GitHub Actions 工作流，使该项目在课程作业之外，也具备了更完整的工程化交付能力。
+同时，我还补充了 FastAPI 后端、React/Vite 前端、SQLite 运行历史、Docker 容器入口和自动化测试，使该项目在课程作业之外，也具备了更完整的工程化交付能力。
 
-因此，这份作业不仅完成了功能实现，也通过同一电影案例把提示词工程中的几个核心方法串联成了一个完整实验流程。
+因此，这份作业不仅完成了功能实现，也通过同一电影案例把提示词工程中的几个核心方法串联成了一个完整实验流程，并进一步通过 Web UI 将实验过程转化为更直观、可复用、可展示的产品化工作台。

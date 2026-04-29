@@ -17,12 +17,12 @@
 
 ## Overview
 
-This repository implements the "Intelligent Movie Review Expert" assignment. It now includes a FastAPI + React experiment workbench for running six prompt-engineering tasks built around one movie:
+This repository implements the "Intelligent Movie Review Expert" assignment. It now includes a FastAPI + React experiment workbench for running six prompt-engineering tasks built around one movie. The Web UI is task-specific rather than a generic form: each experiment has its own visual workflow and result view.
 
 1. Zero-shot vs Few-shot sentiment classification
 2. Forced JSON output parsing
 3. Chain-of-Thought comparison
-4. Roleplay with system prompts in a terminal chat loop
+4. Roleplay with system prompts in a browser chat interface
 5. Prompt evaluator with another LLM call
 6. Grid Search across prompt variants
 
@@ -42,6 +42,17 @@ The project uses:
 - `data/`: movie metadata, reviews, extended plot summary, and local `runs.sqlite3` history
 - `tests/`: legacy unit tests
 - `backend/tests/`: backend service, persistence, and API tests
+
+## Web UI Features
+
+- Task 1: dataset preview, zero-shot/few-shot accuracy bars, and per-review prediction table
+- Task 2: review extraction form, parsed JSON field cards, and keyword chips
+- Task 3: plain analysis vs CoT analysis side-by-side comparison
+- Task 4: multi-turn critic chat page with user/assistant message bubbles
+- Task 5: prompt editor with clarity/completeness/format score meters
+- Task 6: prompt variant ranking cards with score bars and best-variant highlighting
+- Run history: local SQLite history for successful and failed runs
+- Settings status: read-only DeepSeek/TMDB configuration state without exposing API keys
 
 ## Environment Setup
 
@@ -92,6 +103,8 @@ npm run dev
 
 Open `http://localhost:5173` and use the web UI to run all six tasks. Run history is saved to `data/runs.sqlite3`.
 
+The frontend expects the backend at `http://localhost:8000` by default. To use a different backend URL, set `VITE_API_BASE_URL` before running Vite.
+
 You can still run the original interactive menu:
 
 ```bash
@@ -131,6 +144,6 @@ npm run build
 - Task 1 uses five fixed review samples to keep accuracy comparisons reproducible.
 - Task 2 uses `json.loads()` and handles parsing failures safely.
 - Task 3 compares plain analysis against a step-by-step CoT prompt.
-- Task 4 keeps the critic persona in the `system` message.
+- Task 4 keeps the critic persona in the `system` message and exposes it as a multi-turn Web chat.
 - Task 5 evaluates prompts on clarity, completeness, and format.
 - Task 6 compares prompt variants by output length, information density, and coverage.

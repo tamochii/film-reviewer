@@ -17,12 +17,12 @@
 
 ## 项目概览
 
-本仓库实现了“智能影评专家”作业，并新增 FastAPI + React 实验工作台，可在浏览器中运行围绕同一部电影的 6 个提示词工程任务：
+本仓库实现了“智能影评专家”作业，并新增 FastAPI + React 实验工作台，可在浏览器中运行围绕同一部电影的 6 个提示词工程任务。Web UI 不是通用表单，而是为每个任务分别设计了适合该任务的可视化交互与结果展示。
 
 1. Zero-shot 与 Few-shot 情感分类对比
 2. 强制 JSON 输出与解析
 3. Chain-of-Thought（CoT）分析对比
-4. 使用 system prompt 的角色扮演终端对话
+4. 使用 system prompt 的浏览器角色扮演对话
 5. 调用另一个 LLM 进行提示词打分
 6. 针对提示词变体的 Grid Search 比较
 
@@ -45,6 +45,17 @@
 - `data/`：电影信息、影评样本、扩展剧情简介与本地 `runs.sqlite3` 运行历史
 - `tests/`：原有单元测试
 - `backend/tests/`：后端服务、持久化与 API 测试
+
+## Web UI 功能
+
+- Task 1：样本预览、Zero-shot/Few-shot 准确率条、逐条预测表
+- Task 2：影评抽取表单、JSON 字段卡片、关键词标签云
+- Task 3：普通分析与 CoT 分析双栏对比
+- Task 4：多轮影评人聊天页，包含用户/助手气泡消息
+- Task 5：提示词编辑器与 clarity/completeness/format 评分仪表
+- Task 6：提示词变体排名卡片、分数条与最佳变体高亮
+- 运行历史：使用本地 SQLite 保存成功和失败的实验记录
+- 配置状态：只读展示 DeepSeek/TMDB 是否配置，不在前端暴露 API key
 
 ## 环境准备
 
@@ -95,6 +106,8 @@ npm run dev
 
 打开 `http://localhost:5173`，即可在 Web UI 中运行 6 个任务。运行历史会保存到 `data/runs.sqlite3`。
 
+前端默认连接 `http://localhost:8000` 后端。如需改用其他后端地址，可在启动 Vite 前设置 `VITE_API_BASE_URL`。
+
 仍然可以运行原有交互式菜单：
 
 ```bash
@@ -134,6 +147,6 @@ npm run build
 - Task 1 使用 5 条固定影评样本，便于稳定对比 Zero-shot 与 Few-shot 的分类准确率。
 - Task 2 在解析失败时返回错误信息和原始输出，避免程序崩溃。
 - Task 3 通过相同剧情简介对比普通提示和逐步思考提示的分析深度差异。
-- Task 4 将“刻薄但专业的电影评论家”写入 `system` 角色消息中，增强多轮对话的一致性。
+- Task 4 将“刻薄但专业的电影评论家”写入 `system` 角色消息中，并在 Web UI 中提供多轮聊天界面。
 - Task 5 从 clarity、completeness、format 三个维度对提示词进行评估。
 - Task 6 同时比较输出长度、信息密度和内容覆盖度，而不是只看字数。
