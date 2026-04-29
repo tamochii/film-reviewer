@@ -17,7 +17,7 @@
 
 ## Overview
 
-This repository implements the "Intelligent Movie Review Expert" assignment. It covers six prompt-engineering tasks built around one movie:
+This repository implements the "Intelligent Movie Review Expert" assignment. It now includes a FastAPI + React experiment workbench for running six prompt-engineering tasks built around one movie:
 
 1. Zero-shot vs Few-shot sentiment classification
 2. Forced JSON output parsing
@@ -33,15 +33,15 @@ The project uses:
 
 ## Project Structure
 
-- `main.py`: interactive entrypoint for tasks 1-6
+- `backend/app/`: FastAPI application, task services, API routes, clients, config, and SQLite run history
+- `frontend/`: React/Vite/TypeScript Editor Workbench UI
+- `main.py`: original interactive entrypoint for tasks 1-6
 - `prompts.py`: all prompts used in the assignment
-- `task1_classification.py` to `task6_grid_search.py`: individual task scripts
-- `client.py`: DeepSeek chat completion wrapper
-- `tmdb.py`: TMDB lookup utilities
-- `config.py`: environment loading and validation
+- `task1_classification.py` to `task6_grid_search.py`: original individual task scripts
 - `report.md`: experiment report required by the assignment
-- `data/`: movie metadata, reviews, and extended plot summary
-- `tests/`: unit tests for config, client, helpers, and TMDB integration logic
+- `data/`: movie metadata, reviews, extended plot summary, and local `runs.sqlite3` history
+- `tests/`: legacy unit tests
+- `backend/tests/`: backend service, persistence, and API tests
 
 ## Environment Setup
 
@@ -76,7 +76,23 @@ TMDB_BASE_URL=https://api.themoviedb.org/3
 
 ## Running the Project
 
-Run the interactive menu:
+Run the FastAPI backend:
+
+```bash
+uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Run the React workbench in another terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173` and use the web UI to run all six tasks. Run history is saved to `data/runs.sqlite3`.
+
+You can still run the original interactive menu:
 
 ```bash
 python main.py
@@ -101,6 +117,13 @@ Run unit tests with:
 
 ```bash
 pytest -q
+```
+
+Build the frontend with:
+
+```bash
+cd frontend
+npm run build
 ```
 
 ## Notes

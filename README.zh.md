@@ -17,7 +17,7 @@
 
 ## 项目概览
 
-本仓库实现了“智能影评专家”作业，围绕同一部电影完成 6 个提示词工程任务：
+本仓库实现了“智能影评专家”作业，并新增 FastAPI + React 实验工作台，可在浏览器中运行围绕同一部电影的 6 个提示词工程任务：
 
 1. Zero-shot 与 Few-shot 情感分类对比
 2. 强制 JSON 输出与解析
@@ -33,15 +33,18 @@
 
 ## 项目结构
 
-- `main.py`：任务 1 到任务 6 的交互式入口
+- `backend/app/`：FastAPI 应用、任务服务、API 路由、客户端、配置与 SQLite 历史记录
+- `frontend/`：React/Vite/TypeScript 的 Editor Workbench 前端界面
+- `main.py`：原有任务 1 到任务 6 的交互式入口
 - `prompts.py`：集中管理全部提示词
 - `task1_classification.py` 到 `task6_grid_search.py`：六个任务的独立脚本
 - `client.py`：DeepSeek 聊天接口封装
 - `tmdb.py`：TMDB 查询工具
 - `config.py`：环境变量读取与校验
 - `report.md`：实验报告
-- `data/`：电影信息、影评样本、扩展剧情简介
-- `tests/`：配置、客户端、辅助函数和 TMDB 逻辑测试
+- `data/`：电影信息、影评样本、扩展剧情简介与本地 `runs.sqlite3` 运行历史
+- `tests/`：原有单元测试
+- `backend/tests/`：后端服务、持久化与 API 测试
 
 ## 环境准备
 
@@ -76,7 +79,23 @@ TMDB_BASE_URL=https://api.themoviedb.org/3
 
 ## 运行方式
 
-运行交互式菜单：
+启动 FastAPI 后端：
+
+```bash
+uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+另开终端启动 React 工作台：
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+打开 `http://localhost:5173`，即可在 Web UI 中运行 6 个任务。运行历史会保存到 `data/runs.sqlite3`。
+
+仍然可以运行原有交互式菜单：
 
 ```bash
 python main.py
@@ -101,6 +120,13 @@ python task6_grid_search.py
 
 ```bash
 pytest -q
+```
+
+构建前端：
+
+```bash
+cd frontend
+npm run build
 ```
 
 ## 补充说明
